@@ -1,5 +1,6 @@
 import pygame as pg
 from random import choice, sample
+from room import draw_room
 
 COLORS = ['red', 'orange', 'yellow', 'Cyan', 'blue', 'purple', 'Magenta', 'Lime']
 
@@ -10,17 +11,15 @@ class XmasTree:
         self.toys_coords = []
 
     def draw_tree(self, surface):
-        top = 400, 200
         for i in range(4):
-            area = ((300 - 50 * i, 200 + top[1] * (i / 1.5)), (400, 100 + 100 * (i * 0.9)),
-                    (500 + 50 * i, 200 + top[1] * (i / 1.5)))
+            area = ((200 - 50 * i, 200 + 200 * (i / 1.5)), (300, 100 + 100 * (i * 0.9)),
+                    (400 + 50 * i, 200 + 200 * (i / 1.5)))
             self.areas.append(area)
             pg.draw.polygon(surface, '#007700', area)
 
-        pg.draw.rect(surface, 'brown', ((370, 600), (50, 100)))
-        pg.draw.polygon(surface, 'red', ([400, 20], [440, 130], [340, 60], [460, 60], [360, 130]))
-        pg.draw.polygon(surface, 'red', ([386, 60], [414, 60], [424, 87], [400, 103], [375, 87]))
-        # pprint(self.areas)
+        pg.draw.rect(surface, 'SaddleBrown', ((280, 600), (40, 100)))
+        pg.draw.polygon(surface, 'red', ([300, 20], [340, 130], [240, 60], [360, 60], [260, 130]))
+        pg.draw.polygon(surface, 'red', ([286, 60], [314, 60], [324, 87], [300, 103], [275, 87]))
 
     def draw_toys(self, surface):
         self.toys_coords = []
@@ -86,11 +85,18 @@ class XmasTree:
                 while color3 == old_color:
                     color3 = choice(COLORS)
 
-
+    def wall_garland(self, ticks):
+        wall_coords = []
+        with open('wall_points.txt', 'r') as f:
+            for i in f.readlines():
+                wall_coords.append(tuple(map(int, i.split())))
+        for j in wall_coords:
+            if ticks % 2 == 0:
+                pg.draw.circle(screen, choice(COLORS), j, 7)
 
     # def points(self, pos):
-    #     with open('points.txt', 'a+') as f:
-    #         f.write(str(pos[0]) + ' ' + str(pos[1]) + '\n')
+    #     with open('wall_points.txt', 'a+') as f:
+    #         f.write(str(pos) + ', ')
     #         pg.draw.circle(screen, 'red', pos, 7)
 
 
@@ -105,12 +111,12 @@ if __name__ == '__main__':
         color3 = choice(COLORS)
         num = 1
 
-
     pg.init()
     size = 800, 800
     screen = pg.display.set_mode(size)
     clock = pg.time.Clock()
     screen.fill('white')
+    screen.blit(draw_room(), (0, 0))
 
     tree.draw_tree(screen)
     tree.draw_toys(screen)
@@ -126,6 +132,7 @@ if __name__ == '__main__':
             # if event.type == pg.MOUSEBUTTONDOWN:
             #     tree.points(event.pos)
         tree.change_colors(garland_mode, tick)
+        tree.wall_garland(tick)
         tick = tick % 50 + 1
         # print(tick)
         pg.display.flip()
