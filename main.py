@@ -1,8 +1,5 @@
-from pprint import pprint
-
 import pygame as pg
 from random import choice, sample
-import time
 
 COLORS = ['red', 'orange', 'yellow', 'Cyan', 'blue', 'purple', 'Magenta', 'Lime']
 
@@ -35,7 +32,20 @@ class XmasTree:
 
     def choice_mode(self):
         global garland_mode
-        garland_mode = int(input('Выберете режим работы (от 1 до (?)): '))
+        output = ['Мерцание разными цветами', 'Мерцание одним цветом', 'Мерцание двумя цветами', 'Мерцание "змейкой"']
+        print('Доступные режимы гирлянды: 1 2 3 4')
+        try:
+            garland_mode = int(input('Выберите режим (укажите цифру): '))
+            if garland_mode not in range(1, 5):
+                raise Exception
+            print('-----------------------------------------------')
+            print(f'Выбранный режим [{garland_mode}] : {output[garland_mode - 1]}')
+            print('-----------------------------------------------')
+        except Exception:
+            print('-----------------------------------------------')
+            print('Ошибка: выберите режим из списка')
+            print('-----------------------------------------------')
+            self.choice_mode()
 
     def change_colors(self, mode, ticks):
         if mode == 1:
@@ -50,27 +60,32 @@ class XmasTree:
                     pg.draw.circle(screen, color, i, 7)
 
         elif mode == 3:
-            global color3, num
-            for i in range(num):
-                pg.draw.circle(screen, color3, self.toys_coords[i], 7)
-            pg.draw.circle(screen, 'yellow', self.toys_coords[num-1], 7, 1)
-            num += 1
-            if num > 125:
-                color3 = choice(COLORS)
-                num = 1
-
-        elif mode == 4:
-            global c1, c2, n4
+            global c1, c2, n3
             if ticks % 12 == 0:
                 for i in range(0, len(self.toys_coords), 2):
                     pg.draw.circle(screen, c1, self.toys_coords[i], 7)
                 for i in range(1, len(self.toys_coords), 2):
                     pg.draw.circle(screen, c2, self.toys_coords[i], 7)
                 c1, c2 = c2, c1
-                n4 += 1
-            if n4 == 4:
+                n3 += 1
+            if n3 == 4:
                 c1, c2 = sample(COLORS, k=2)
-                n4 = 0
+                n3 = 0
+
+        elif mode == 4:
+            global color3, num
+            for i in range(num):
+                pg.draw.circle(screen, color3, self.toys_coords[i], 7)
+            pg.draw.circle(screen, 'yellow', self.toys_coords[num - 1], 7, 1)
+            num += 1
+            if num > 125:
+                pg.draw.circle(screen, color3, self.toys_coords[-1], 7)
+                old_color = color3
+                color3 = choice(COLORS)
+                num = 1
+                while color3 == old_color:
+                    color3 = choice(COLORS)
+
 
 
     # def points(self, pos):
@@ -84,11 +99,12 @@ if __name__ == '__main__':
     garland_mode = None
     tree.choice_mode()
     if garland_mode == 3:
+        c1, c2 = sample(COLORS, k=2)
+        n3 = 0
+    if garland_mode == 4:
         color3 = choice(COLORS)
         num = 1
-    if garland_mode == 4:
-        c1, c2 = sample(COLORS, k=2)
-        n4 = 0
+
 
     pg.init()
     size = 800, 800
@@ -105,8 +121,8 @@ if __name__ == '__main__':
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 running = False
-            if event.type == pg.MOUSEMOTION:
-                print(event.pos)
+            # if event.type == pg.MOUSEMOTION:
+            #     print(event.pos)
             # if event.type == pg.MOUSEBUTTONDOWN:
             #     tree.points(event.pos)
         tree.change_colors(garland_mode, tick)
