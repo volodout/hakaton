@@ -94,11 +94,6 @@ class XmasTree:
             if ticks % 2 == 0:
                 pg.draw.circle(screen, choice(COLORS), j, 7)
 
-    # def points(self, pos):
-    #     with open('wall_points.txt', 'a+') as f:
-    #         f.write(str(pos) + ', ')
-    #         pg.draw.circle(screen, 'red', pos, 7)
-
 
 if __name__ == '__main__':
     tree = XmasTree()
@@ -127,13 +122,8 @@ if __name__ == '__main__':
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 running = False
-            # if event.type == pg.MOUSEMOTION:
-            #     print(event.pos)
-            # if event.type == pg.MOUSEBUTTONDOWN:
-            #     tree.points(event.pos)
         tree.change_colors(garland_mode, tick)
         tree.wall_garland(tick)
         tick = tick % 50 + 1
-        # print(tick)
         pg.display.flip()
         clock.tick(15)
